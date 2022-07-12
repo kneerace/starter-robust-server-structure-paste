@@ -1,18 +1,23 @@
 // const { json, application } = require("express");
 const express = require("express");
 const app = express();
-const pastes = require("./data/pastes-data");
 app.use(express.json());
 
+// PASTE
+    const pastesRouter = require("./pastes/pastes.router");
+    app.use("/pastes", pastesRouter); // its app.use not app.get, as get is defined in the router
 
-const pastesRouter = require("./pastes/pastes.router");
+// NOTES
+    const notesRouter = require("./notes/notes.router");
+    app.use("/notes",notesRouter);
 
+//USERS
+    const userRouter = require("./users/user.router");
+    app.use("/users",userRouter);
 
-app.use("/pastes", pastesRouter); // its app.use not app.get, as get is defined in the router
-
-//POST handler
-app.post("/pastes", pastesRouter);
-
+// RATINGS
+    const ratingRouter = require("./ratings/rating.router");
+    app.use("/ratings", ratingRouter);
 
 // Not found handler
 app.use((request, response, next) => {
