@@ -1,0 +1,159 @@
+const { json, application } = require("express");
+const express = require("express");
+const app = express();
+app.use(express.json());
+// app.use(express.urlencoded());
+// const pastes = require("./data/pastes-data");
+// const users = require("./data/users-data");
+// const states = require("./data/states-data");
+
+const pastesRouter = require("./pastes/pastes.router");
+
+
+// TODO: Follow instructions in the checkpoint to implement ths API.
+
+// app.get("/users",(req,res, next)=> {
+// res.json({data:users});
+// });
+// app.get("/users/:userId",(req,res, next)=> {
+//   const {userId} = req.params;
+//   const foundUser = users.find((user)=> user.id === Number(userId));
+  
+//   if(foundUser){
+//     res.json({data:foundUser})
+//   }
+//   else{
+//     next(`User ID not found: ${userId}`);
+//   }
+// });
+
+// app.get("/states", (req, res)=>{
+//   res.json({data: states});
+// })
+
+// app.get("/states/:stateCode", (req, res, next)=>{
+//   const {stateCode} = req.params;
+//   // console.log("states:stateCode:::", stateCode, " includes", Object.keys(states))
+//   if (Object.keys(states).includes(stateCode)){
+//     const stateName = states[stateCode];
+//     res.send({data: {stateCode: stateCode, name:stateName}});
+//   }
+//   else {
+//     next(`State code not found: ${stateCode}`);
+//   }
+// })
+
+// ============PASTE==============
+// app.use("/pastes/:pasteId", (req, res, next)=>{
+//   const {pasteId} = req.params;
+//   console.log("pastes:pasteID:::::", pasteId);
+//   const foundPaste = pastes.find((paste)=> paste.id ===Number(pasteId));
+
+//   if (foundPaste){
+//     res.json({data: foundPaste});
+//   }else{
+//     next({
+//       status : 404, 
+//       message:`Paste id not found: ${pasteId}`
+//     });
+//   }
+// });
+
+//.get we are making it so that the handler will be called only if HTTP method of incoming request is GET
+// app.get("/pastes", (req, res)=>{
+//   // json() method of the response object tells Express to respond with data in JSON format
+//   res.json({data: pastes});
+// })
+
+app.use("/pastes", pastesRouter); // its app.use not app.get, as get is defined in the router
+
+// New Middleware function to validate request body
+// function bodyHasTextProperty(req, res, next){
+//   const{data:{text} = {} } = req.body;
+//   if(text){
+//     return next();
+//   }
+//   next({
+//     status : 400,
+//     message:" A 'text' property is required.",
+//   });
+// }
+
+// let lastPasteId = pastes.reduce((maxid, paste)=> Math.max(maxid, paste.id),0);
+// //POST handler
+// app.post("/pastes", bodyHasTextProperty, 
+//      (req, res, next) => {
+//       // console.log("req", req);
+//       console.log('POST pastes:::::', req.body , ' maxID:::', lastPasteId);
+//       const {data : { name, syntax, exposure, expiration, text, user_id}={} } = req.body;
+      
+//       // if(text){
+//       const newPaste ={
+//         id: ++lastPasteId, 
+//         name, syntax, exposure, expiration, text, user_id 
+//       };
+//         pastes.push(newPaste);
+//         // res.json({data: newPaste});
+//         res.status(201).json({data:newPaste});
+//       // }
+//       // else{
+//       //   res.sendStatus(400);
+//       // }
+//   });
+
+
+
+
+// // RstfulApi Assignment
+// const notes = require("./data/notes-data");
+// app.get("/notes/:noteId", (req, res, next) => {
+//   const noteId = Number(req.params.noteId);
+//   const foundNote = notes.find((note) => note.id === noteId);
+//   // console.log("NoteId:::", noteId, " foundNote:::",foundNote);
+//   if (!foundNote){
+//     res.status(400);
+//     next(`Note id not found: ${noteId}`);
+//     }
+//   else{
+//     res.json({ data: foundNote });
+//   }
+// });
+
+// app.get("/notes", (req, res) => {
+//   res.json({ data: notes });
+// });
+
+// let noteMaxId = notes.reduce((maxid, note)=> Math.max(maxid, note.id),0);
+// console.log("maxId:::", noteMaxId)
+
+// app.post("/notes",(req, res, next)=>{
+//   const {data: { text } = {} } = req.body;
+//   console.log("maxid::", noteMaxId, ' text::', text);
+  
+//   if(text){
+//     const newNote ={id : ++noteMaxId,
+//                   text,
+//                  };
+//     notes.push(newNote);
+//     res.status(201).json({data:newNote});
+//   }
+//   else{
+//       res.status(400);
+//       next("data and text is mandatory");
+//   }
+// });
+// // Assignment ......
+
+// Not found handler
+app.use((request, response, next) => {
+  next(`Not found: ${request.originalUrl}`);
+});
+
+// Error handler
+app.use((error, request, response, next) => {
+  console.error(error);
+  const {status = 500, message = "Something went wrong!!" } = error;
+  response.status(status).json({error: message});
+});
+
+module.exports = app;
